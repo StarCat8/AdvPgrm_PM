@@ -1,0 +1,14 @@
+CC = gcc
+OBJS = InitCondi.o allvars.o funzioni.o
+CFLAGS = -Wall
+all: Init
+Init: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o Init -lm
+InitCondi.o: InitCondi.c
+	$(CC) $(CFLAGS) -c InitCondi.c
+allvars.o: allvars.c allvars.h
+	$(CC) $(CFLAGS) -c allvars.c
+funzioni.o: funzioni.c funzioni.h
+	$(CC) $(CFLAGS) -c funzioni.c
+clean:
+	rm -f $(OBJS) $(FOBJS) Init

@@ -1,0 +1,15 @@
+double ran3(long *idum);
+double delta(double A, double x, double L);
+double rho(double rho_crit, double A, double x, double L);
+void rejection(double ymin, double ymax, int numpunti, double intervallo, long *dumm, double rho_crit, double A, double massa, double i_speed, char *name, int TEXT, int BINAR);
+void makeHist(char *name, int Nbin);
+void readParamDouble(char *name);
+void readParamInt(char *name);
+double * creaPunti(int Npnt, double (*f)(double), long int *dumm);
+double anglePHI(double phi);
+double angleTHETA(double costheta);
+double radialC(double x);
+double radialS(double x);
+double areaCerchio(double r);
+double volSfera(double r);
+double density(double *punti, double (*A)(double), double dist1, double dist2, int Npnt);

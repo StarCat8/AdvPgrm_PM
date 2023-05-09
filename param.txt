@@ -1,0 +1,10 @@
+unit_vel 1e5
+unit_mass 1.989e43
+unit_lenght 3.085678e21
+N_points 4096
+N_grid 1024
+BoxLenght 50.0
+A_deltaPar 0.05
+H_0 0.698
+outText 0
+outBin 1
