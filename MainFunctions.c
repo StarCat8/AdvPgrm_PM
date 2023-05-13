@@ -44,3 +44,10 @@ double densityJthCell(int j, double N_grid, double N_points, double (*f)(double,
     massContr = massa*f(partPos-cellPos, cellSize)/BoxLenght*BoxLenght*BoxLenght;
     return massContr;
 }
+
+double derive(double x_fwd, double x_bck, double h)
+    {
+        double primeVal;
+        primeVal = (x_fwd - x_bck )/(2.0*h);
+        return primeVal;
+    }

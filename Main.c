@@ -33,8 +33,7 @@ int main(){
         particle[i].v=buff[1];
         particle[i].a=buff[2];
         particle[i].m=buff[3];
-        //printf("%lf %lf %lf %lf %d %d\n", particle[i].x, particle[i].v, particle[i].a, particle[i].m, i, N_points);
-    }
+        }
     fclose(ptrToIC);
     f=&TSC; //scelta della funzione di distribuzione da utilizzare, da mettere con un ifdef probabilmente
     /*CALCOLO DELLA MASSA SU GRIGLIA*/
@@ -58,9 +57,7 @@ int main(){
         fprintf(stampaMassPerGrid, "%lf\n", massGrid[i]);
     }
     fclose(stampaMassPerGrid);
-    
-    printf("AAAAAAAAAAAAAAAAA");
-
+                //FFTW
     fftw_complex *kDensity, *kPot;
     double *Pot, k, norm;
     Pot = (double*)malloc(N_grid * sizeof(double));
@@ -83,11 +80,24 @@ int main(){
     fftw_execute(fft_real_bck);
     //renorm
     norm = 1.0 / N_grid;
-    FILE *mmm;
-    mmm = fopen("pot.txt", "w+");
+    FILE *potTxt;
+    potTxt = fopen("pot.txt", "w+");
     for(i=0; i<N_grid; i++){
         Pot[i] *= norm;
-        fprintf(mmm, "%lf\n", Pot[i]);
+        fprintf(potTxt, "%lf\n", Pot[i]);
     }
-    
+    /*force*/
+    double *force;
+    force = (double*)malloc(N_grid * sizeof(double));
+    force[0] = (Pot[0] - Pot[N_grid]) / cellSize;
+    for(i=1; i<N_grid-1; i++){
+        force[i] = (Pot[i+1]- Pot[i-1])/ cellSize;
+        //printf("%lf ", force[i]);
+    }
+    force[N_grid] = (Pot[N_grid] - Pot[0]) / cellSize;
+    FILE *forTxt;
+    forTxt = fopen("for.txt", "w+");
+    for(i=1; i<N_grid; i++){
+        fprintf(forTxt, "%lf \n", force[i]);
+    }
     }
