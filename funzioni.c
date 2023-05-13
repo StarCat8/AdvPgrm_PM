@@ -166,18 +166,20 @@ void rejection(double ymin, double ymax, int numpunti, double intervallo, long *
 		xtry = 1.*(intervallo * ran3(dumm));
 		ytry = 1.*((ymax-ymin)*ran3(dumm));
 		y = rho(rho_crit, A, xtry, intervallo); //
-		if (ytry < y && TEXT){ //
-			fprintf(fileT, "%lf %lf %lf %lf\n", xtry, i_speed, 0.0, massa);
-		}
-		if (ytry < y && BINAR){ //
-            puntiBin[0] = xtry;
-            puntiBin[1] = i_speed;
-            puntiBin[2] = 0.0;
-            puntiBin[3] = massa;
-			fwrite(puntiBin, sizeof(double), 4, fileB); //f_try(x_0) < f(x_0) accepted, x, f(x_0), numero del punto
-			/*stampa su file x FOPEN(ecc)*/
-            i++;
-		}
+        if(ytry < y){
+            if (TEXT){ //
+                fprintf(fileT, "%lf %lf %lf %lf\n", xtry, i_speed, 0.0, massa);
+            }
+            if (BINAR){ //
+                puntiBin[0] = xtry;
+                puntiBin[1] = i_speed;
+                puntiBin[2] = 0.0;
+                puntiBin[3] = massa;
+                fwrite(puntiBin, sizeof(double), 4, fileB); //f_try(x_0) < f(x_0) accepted, x, f(x_0), numero del punto
+                /*stampa su file x FOPEN(ecc)*/
+                i++;
+            }
+        }
 	}
 	fclose(fileT);
     fclose(fileB);

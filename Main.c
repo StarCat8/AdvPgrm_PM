@@ -7,6 +7,7 @@
 #include "allvars.h"
 #include "funzioni.h"
 #include "MainFunctions.h"
+#include <fftw3.h>
 
 double (*f)(double, double);
 
@@ -57,4 +58,36 @@ int main(){
         fprintf(stampaMassPerGrid, "%lf\n", massGrid[i]);
     }
     fclose(stampaMassPerGrid);
+    
+    printf("AAAAAAAAAAAAAAAAA");
+
+    fftw_complex *kDensity, *kPot;
+    double *Pot, k, norm;
+    Pot = (double*)malloc(N_grid * sizeof(double));
+    fftw_plan fft_real_fwd, fft_real_bck;
+    kDensity = fftw_malloc( N_grid * sizeof(fftw_complex));
+    kPot = fftw_malloc( N_grid * sizeof(fftw_complex));
+        /*definition of back and fourth FFT*/
+    fft_real_fwd = fftw_plan_dft_r2c_1d(N_grid, massGrid, kDensity, FFTW_ESTIMATE );
+    fft_real_bck = fftw_plan_dft_c2r_1d(N_grid, kPot, Pot, FFTW_ESTIMATE );
+    //forward
+    fftw_execute(fft_real_fwd);
+    //divido per k^2
+    norm = 2*M_PI/BoxLenght;
+    for(i = 1; i<N_grid/2+1; i++){
+        k = (i*1.0) * norm;
+        kPot[i][0] = -kDensity[i][0]/k/k;
+        kPot[i][1] = -kDensity[i][1]/k/k;
+    }
+    //backward
+    fftw_execute(fft_real_bck);
+    //renorm
+    norm = 1.0 / N_grid;
+    FILE *mmm;
+    mmm = fopen("pot.txt", "w+");
+    for(i=0; i<N_grid; i++){
+        Pot[i] *= norm;
+        fprintf(mmm, "%lf\n", Pot[i]);
+    }
+    
     }

@@ -41,6 +41,6 @@ double densityJthCell(int j, double N_grid, double N_points, double (*f)(double,
     double massContr = 0;
     double cellPos = cellSize/2.0+cellSize*j;
     //printf("%lf", partPos-cellPos);
-    massContr = massa*f(partPos-cellPos, cellSize);
+    massContr = massa*f(partPos-cellPos, cellSize)/BoxLenght*BoxLenght*BoxLenght;
     return massContr;
 }
