@@ -6,5 +6,5 @@ N_grid 1024
 BoxLenght 50.0
 A_deltaPar 0.05
 H_0 0.698
-outText 0
+outText 1
 outBin 1

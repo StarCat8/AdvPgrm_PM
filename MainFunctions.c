@@ -38,16 +38,27 @@ double TSC(double x, double Cell_Size){ //Triangular Shaped Cloud
 }
 
 double densityJthCell(int j, double N_grid, double N_points, double (*f)(double, double), double BoxLenght, double massa, double partPos, double cellSize){ //in realtà è la massa nella j-esima cella. Questa viene distribuita tramite una funzione di distribuzione sia essa NGP CIC TSC
-    double massContr = 0;
+    double retVal = 0;
     double cellPos = cellSize/2.0+cellSize*j;
     //printf("%lf", partPos-cellPos);
-    massContr = massa*f(partPos-cellPos, cellSize)/BoxLenght*BoxLenght*BoxLenght;
-    return massContr;
+    retVal = massa*f(partPos-cellPos, cellSize)/BoxLenght*BoxLenght*BoxLenght;
+    return retVal;
 }
 
-double derive(double x_fwd, double x_bck, double h)
-    {
-        double primeVal;
-        primeVal = (x_fwd - x_bck )/(2.0*h);
-        return primeVal;
-    }
+double timeStep(double cellSize, double minVel){ //Calcolo del time step. Probabilmente contiene un errore, di fatti non è stata usata (è commentata nel main)
+    double w, retVal;
+    w = 0.3;
+    retVal = w * cellSize/minVel;
+    return retVal;
+}
+
+double halfStepVelocity(double v, double timeStep, double F, double mass){ //update della velocità nel leap frog
+    double retVal;
+    retVal = v + F/mass * timeStep;
+    return retVal;
+}
+double posUpdate(double x, double v, double timeStep){ //Update della posizione nel leap frog
+    double retVal;
+    retVal = x + v*timeStep;
+    return retVal;
+}

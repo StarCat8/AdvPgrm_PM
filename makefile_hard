@@ -1,0 +1,33 @@
+CC = gcc
+CFLAGS_OPT = -Wall -Wextra
+OBJS = Main.o allvars.o funzioni.o MainFunctions.o
+CFLAGS = $(CFLAGS_OPT) -O3 -fno-omit-frame-pointer
+CFLAGS_DEBUG = $(CFLAGS_OPT) -Og -ggdb3 -fno-omit-frame-pointer
+CFLAGS_OMP = $(CFLAGS_OPT) -O3 -fopenmp
+
+SYSTYPE = $(strip $(shell uname -n))
+PROG = Main
+PROG_DEBUG = $(PROG)_debug
+PROG_OMP = $(PROG)_OMP
+
+HEADERS = $(wildcard ./*.h)
+SOURCES = $(wildcard ./*.c)
+DEPENDECIES = makefile $(SOURCES) $(HEADERS)
+
+LIBS = -lfftw3 -lm
+
+.PHONY: info clean debug all omp
+
+all: $(PROG)
+$(PROG): $(DEPENDECIES)
+	$(CC) $(CFLAGS) $(OBJS) -o Main $(LIBS)
+Main.o: Main.c
+	$(CC) $(CFLAGS) -c Main.c
+allvars.o: allvars.c allvars.h
+	$(CC) $(CFLAGS) -c allvars.c
+funzioni.o: funzioni.c funzioni.h
+	$(CC) $(CFLAGS) -c funzioni.c $(LIBS)
+MainFunctions.o: MainFunctions.c MainFunctions.h
+	$(CC) $(CFLAGS) -c MainFunctions.c $(LIBS)
+clean:
+	rm -rf $(PROG) $(OBJS) $(FOBJS) Main
