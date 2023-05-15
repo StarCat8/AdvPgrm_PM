@@ -17,8 +17,7 @@ What to expect?
  As of today this program, if correctly compiled, should produce:
   -  a "DISTRRHOB.dat" binary file containing the distributed particle inside the box.*
   -  a "DISTRRHO" text file containing the same as above*
-  -  a "phaseSpace.txt" text file containing the temporal evolution of 5 particles inside the phase space (x - v). This data formatting is meant to be used with gnuplot. When plotting with gnuplot you can use the "u 2n-1:2n" keyword to plot the n-th particle evolution. Eg, to plot the 3rd particle trajectory in the phase space you should type:
- "plot "phaseSpace.txt" u 5:6 w l".
+  -  5 ("phaseSpace1",..., "phaseSpace5") files containing a screenshot of the phase space of the 4096 particles. Plotting one over the other (using gnuplot) allows us to appreciate the evolution of the system.
 
 *these files creation is to be set in the param.txt file. Default is to create both .dat and the text file.*
 
