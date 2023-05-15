@@ -14,13 +14,11 @@ double (*f)(double, double);
 int main(){
     FILE *ptrToIC; //puntatore al file delle condizioni iniziali
     FILE *stampaMassPerGrid; //puntatore a un file dove stampo i valori della massa sulla griglia
-    FILE *phaseSpace;
     int i, j, MAX_STEPS;
-    MAX_STEPS=100; //NUMERO DI VOLTE CHE SI INTEGRA
+    MAX_STEPS=10000; //NUMERO DI VOLTE CHE SI INTEGRA
     double *Pot, k, norm;
     ptrToIC = fopen("DISTRRHOB.dat", "rb");
     char paramFile[] = "param.txt"; //nome parameter file
-    phaseSpace = fopen("phaseSpace.txt", "w");
     //leggi i parametri
     readParamDouble(paramFile); //
     readParamInt(paramFile);
@@ -95,14 +93,14 @@ int main(){
         /*force*/
         for(int p = 0; p < N_points ; p++) //loop per calcolare la forza su singola particella p data dalla distribuzione secondo kernel TSC delle forza i sulla griglia.
         {
-            force[0] = (Pot[0] - Pot[N_grid-1]) / (2.0*cellSize);
+            force[0] = -(Pot[0] - Pot[N_grid-1]) / (2.0*cellSize);
             forceOnParticle[p] = f( particle[p].x - 0.5*cellSize, cellSize)*force[0];
             for(i=1; i<N_grid-1; i++)
             {
-                force[i] = (Pot[i+1]- Pot[i-1])/ (2.0*cellSize);
+                force[i] = -(Pot[i+1]- Pot[i-1])/ (2.0*cellSize);
                 forceOnParticle[p] += f(particle[p].x-i*cellSize - 0.5*cellSize, cellSize)*force[i];
             }
-            force[N_grid] = (Pot[N_grid] - Pot[0]) / (2.0*cellSize);
+            force[N_grid] = -(Pot[N_grid] - Pot[0]) / (2.0*cellSize);
             forceOnParticle[p] += f( particle[p].x - N_grid*cellSize - 0.5*cellSize, cellSize)*force[N_grid];
             particle[p].a=forceOnParticle[p]/particle[p].m;
             //printf("\n<%lf>", particle[p].a);
@@ -134,16 +132,51 @@ int main(){
                 particle[i].x = particle[i].x - BoxLenght;
             }
         }
-        if(leapCounter%2==0){ //Stampo su file la traiettoria nello spazio delle fasi (x vs v) di 5 particelle
-        fprintf(phaseSpace, "%lf %lf", particle[0].x, particle[0].v);
-        fprintf(phaseSpace, " %lf %lf", particle[2].x, particle[2].v);
-        fprintf(phaseSpace, " %lf %lf", particle[3].x, particle[3].v);
-        fprintf(phaseSpace, " %lf %lf", particle[4].x, particle[4].v);
-        fprintf(phaseSpace, " %lf %lf\n", particle[1].x, particle[1].v);
+
+        if(leapCounter==0){ //Stampo su file la traiettoria nello spazio delle fasi (x vs v) di 5 particelle
+            FILE *phaseSpace1;
+            phaseSpace1 = fopen("phaseSpace1", "w");
+            for(i=0; i<N_points; i++){
+            fprintf(phaseSpace1, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace1);
         }
-        if(leapCounter%(MAX_STEPS/100)==0){
-            printf("\n%d/100", leapCounter/(MAX_STEPS/100));
+        if(leapCounter==40){
+            FILE *phaseSpace2;
+            phaseSpace2 = fopen("phaseSpace2", "w");
+                    for(i=0; i<N_points; i++){
+            fprintf(phaseSpace2, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace2);
         }
+        if(leapCounter==80){
+            printf("EHEH");
+            FILE *phaseSpace3;
+            phaseSpace3 = fopen("phaseSpace3", "w");
+                    for(i=0; i<N_points; i++){
+            fprintf(phaseSpace3, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace3);
+        }
+        if(leapCounter==120){
+            FILE *phaseSpace4;
+            phaseSpace4 = fopen("phaseSpace4", "w");
+            for(i=0; i<N_points; i++){
+            fprintf(phaseSpace4, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace4);
+        }
+        if(leapCounter==160){
+            FILE *phaseSpace5;
+            phaseSpace5 = fopen("phaseSpace5", "w");
+            for(i=0; i<N_points; i++){
+            fprintf(phaseSpace5, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace5);
+        }
+        if(leapCounter%100==0)
+        printf("%d/100\n", leapCounter/(MAX_STEPS/100));
+
         //printf("\nleapCount: %lf %lf %d \n", particle[0].x, particle[0].v, leapCounter);
         }
         //free(forceOnParticle);
@@ -153,5 +186,9 @@ int main(){
         //fftw_destroy_plan(fft_real_bck);
         //free(force);
         //free(Pot);
-        fclose(phaseSpace);
+        /*fclose(phaseSpace1);
+        fclose(phaseSpace2);
+        fclose(phaseSpace3);
+        fclose(phaseSpace4);
+        fclose(phaseSpace5);*/
     }
