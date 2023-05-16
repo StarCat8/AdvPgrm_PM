@@ -19,7 +19,7 @@ What to expect?
   -  a "DISTRRHO" text file containing the same as above*
   -  5 ("phaseSpace1",..., "phaseSpace5") files containing a screenshot of the phase space of the 4096 particles. Plotting one over the other (using gnuplot) allows us to appreciate the evolution of the system.
 
-***these files creation is to be set in the param.txt file. Default is to create both .dat and the text file.*
+**these files creation is to be set in the param.txt file. Default is to create both .dat and the text file.*
 
 The "makefile_hard" is the future version of the makefile file. It is meant to provide different keyword based on the need of the user, eg run/debug/run with omp.
 
