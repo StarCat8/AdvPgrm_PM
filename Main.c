@@ -18,7 +18,7 @@ int main(){
     int i, j, MAX_STEPS; 
     unsigned long totalStepsTaken;
     totalStepsTaken=0;
-    MAX_STEPS=301; //NUMERO DI VOLTE CHE SI INTEGRA
+    MAX_STEPS=2501; //NUMERO DI VOLTE CHE SI INTEGRA
     double *Pot, k, norm, elapsedTime;
     struct timeval t1, t2;
     gettimeofday(&t1, NULL);
@@ -130,7 +130,7 @@ int main(){
         }
         step = timeStep(cellSize, tmp); //STEP FISSO
         } else {
-            step = cellSize/1000;
+            step = cellSize/10000;
         }
         //update particles' position and velocity
         for(i = 0; i<N_points; i++){
