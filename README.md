@@ -11,7 +11,7 @@ Else you could just type the following in the bash terminal:
  make 
  ./Main
 
-The numbers of step of the leap frog algorithm is still a sore point of this program. Atm you can edit the number of time step taken through the variabile MAX_STEPS inside the Main.c file in line 19.
+The numbers of step of the leap frog algorithm is still a sore point of this program. Atm you can edit the number of time step taken through the variabile MAX_STEPS inside the Main.c file in line 21.
 
 What to expect?
  As of today this program, if correctly compiled, should produce:
