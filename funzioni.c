@@ -108,7 +108,7 @@ void readParamDouble(char *name){
     double x;
     FILE *ptrToParam;
     ptrToParam = fopen(name, "r"); 
-    printf("%s", name);
+    //printf("%s", name);
     while(fscanf(ptrToParam, "%s %lf\n", buf, &x)!=EOF){
         if(!strcmp(buf, "unit_vel")){
             unit_vel = x;
