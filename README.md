@@ -3,9 +3,9 @@ The PM main repo
 
  A C code is used to simulate the evolution of dark matter. We use a lagrangian approach through the particle mesh method.
 
- In order to run it correctly, as of now, you firstly have to run the makefile "makefileInit", then run the Init executable, then run the makefile "makefile" to compile the Main, to finally run Main.
-  
-examples of bash commands required in order to run:
+ In order to run it just run the RUN.sh bash script.
+ 
+Else you could just type the following in the bash terminal:
  make -f makefileInit
  ./Init
  make 
