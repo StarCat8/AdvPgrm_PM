@@ -37,7 +37,7 @@ double TSC(double x, double Cell_Size){ //Triangular Shaped Cloud
     }
 }
 
-double densityJthCell(int j, double N_grid, double N_points, double (*f)(double, double), double BoxLenght, double massa, double partPos, double cellSize){ //in realtà è la massa nella j-esima cella. Questa viene distribuita tramite una funzione di distribuzione sia essa NGP CIC TSC
+double densityJthCell(int j, double (*f)(double, double), double BoxLenght, double massa, double partPos, double cellSize){ //in realtà è la massa nella j-esima cella. Questa viene distribuita tramite una funzione di distribuzione sia essa NGP CIC TSC
     double retVal = 0;
     double cellPos = cellSize/2.0+cellSize*j;
     //printf("%lf", partPos-cellPos);
@@ -62,3 +62,16 @@ double posUpdate(double x, double v, double timeStep){ //Update della posizione 
     retVal = x + v*timeStep;
     return retVal;
 }
+
+/*void saveProgress(particle_data *part, int numberOfPoints){
+    FILE *save;
+    double buff[4];
+    save = fopen("save.txt", "wb");
+    for(int i = 0; i<numberOfPoints; i++){
+        buff[0]=part[i].x;
+        buff[1]=part[i].v;
+        buff[2]=part[i].a;
+        buff[3]=part[i].m;
+        fprintf(buff, sizeof(double), 4, save);
+    }
+}*/

@@ -8,15 +8,20 @@
 #include "funzioni.h"
 #include "MainFunctions.h"
 #include <fftw3.h>
+#include <sys/time.h>
+//#include <omp.h>
 
 double (*f)(double, double);
 
 int main(){
     FILE *ptrToIC; //puntatore al file delle condizioni iniziali
-    FILE *stampaMassPerGrid; //puntatore a un file dove stampo i valori della massa sulla griglia
-    int i, j, MAX_STEPS;
-    MAX_STEPS=10000; //NUMERO DI VOLTE CHE SI INTEGRA
-    double *Pot, k, norm;
+    int i, j, MAX_STEPS; 
+    unsigned long totalStepsTaken;
+    totalStepsTaken=0;
+    MAX_STEPS=301; //NUMERO DI VOLTE CHE SI INTEGRA
+    double *Pot, k, norm, elapsedTime;
+    struct timeval t1, t2;
+    gettimeofday(&t1, NULL);
     ptrToIC = fopen("DISTRRHOB.dat", "rb");
     char paramFile[] = "param.txt"; //nome parameter file
     //leggi i parametri
@@ -54,23 +59,26 @@ int main(){
                     
                     
                     /////* MAIN INTEGRATION LOOP */////
+    //#pragma omp parallel for num_threads(4)
     for(int leapCounter=0; leapCounter<MAX_STEPS; leapCounter++){
                         /*inizializzazione massa*/
         for(i=0; i<N_grid; i++){ //Inizializzo la massa sulla griglia a 0 per sicurtade
             massGrid[i]=0;
+            totalStepsTaken++;
         }
         /*CALCOLO DELLA DENSITA' SU GRIGLIA*/
         for(j=0; j<N_grid; j++){
             //printf("\n%d\n", j);
             for(i=0; i<N_points; i++){
-                massGrid[j] = massGrid[j] + densityJthCell(j, N_grid, N_points, f, BoxLenght, particle[i].m, particle[i].x, cellSize); 
+                totalStepsTaken++;
+                massGrid[j] = massGrid[j] + densityJthCell(j, f, BoxLenght, particle[i].m, particle[i].x, cellSize); 
                 if(particle[i].x < 3*cellSize){ //condizioni di periodicità
                     temp = particle[i].x+BoxLenght;
-                    massGrid[j] = massGrid[j] + densityJthCell(j, N_grid, N_points, f, BoxLenght, particle[i].m, temp, cellSize);
+                    massGrid[j] = massGrid[j] + densityJthCell(j, f, BoxLenght, particle[i].m, temp, cellSize);
                 }
                 if(particle[i].x > BoxLenght - 3*cellSize){ //condizioni di periodicità
                     temp = particle[i].x-BoxLenght;
-                    massGrid[j] = massGrid[j] + densityJthCell(j, N_grid, N_points, f, BoxLenght, particle[i].m, temp, cellSize);
+                    massGrid[j] = massGrid[j] + densityJthCell(j, f, BoxLenght, particle[i].m, temp, cellSize);
                 }
         }}
 
@@ -82,6 +90,7 @@ int main(){
         //divido per k^2
         norm = 2*M_PI/BoxLenght;
         for(i = 1; i<N_grid/2+1; i++){
+            totalStepsTaken++;
             k = (i*1.0) * norm;
             kPot[i][0] = -kDensity[i][0]/k/k;
             kPot[i][1] = -kDensity[i][1]/k/k;
@@ -93,10 +102,12 @@ int main(){
         /*force*/
         for(int p = 0; p < N_points ; p++) //loop per calcolare la forza su singola particella p data dalla distribuzione secondo kernel TSC delle forza i sulla griglia.
         {
+            totalStepsTaken++;
             force[0] = -(Pot[0] - Pot[N_grid-1]) / (2.0*cellSize);
             forceOnParticle[p] = f( particle[p].x - 0.5*cellSize, cellSize)*force[0];
             for(i=1; i<N_grid-1; i++)
             {
+                totalStepsTaken++;
                 force[i] = -(Pot[i+1]- Pot[i-1])/ (2.0*cellSize);
                 forceOnParticle[p] += f(particle[p].x-i*cellSize - 0.5*cellSize, cellSize)*force[i];
             }
@@ -123,6 +134,7 @@ int main(){
         }
         //update particles' position and velocity
         for(i = 0; i<N_points; i++){
+            totalStepsTaken++;
             particle[i].v = halfStepVelocity(particle[i].v, step, forceOnParticle[i], particle[i].m);
             particle[i].x = posUpdate(particle[i].x, particle[i].v, step);
             if(particle[i].x < 0){                            //Boundary cond
@@ -133,7 +145,7 @@ int main(){
             }
         }
 
-        if(leapCounter==0){ //Stampo su file la traiettoria nello spazio delle fasi (x vs v) di 5 particelle
+        if(leapCounter==500){ //Stampo su file la traiettoria nello spazio delle fasi (x vs v) di 5 particelle
             FILE *phaseSpace1;
             phaseSpace1 = fopen("phaseSpace1", "w");
             for(i=0; i<N_points; i++){
@@ -141,7 +153,7 @@ int main(){
             }
             fclose(phaseSpace1);
         }
-        if(leapCounter==40){
+        if(leapCounter==1000){
             FILE *phaseSpace2;
             phaseSpace2 = fopen("phaseSpace2", "w");
                     for(i=0; i<N_points; i++){
@@ -149,7 +161,7 @@ int main(){
             }
             fclose(phaseSpace2);
         }
-        if(leapCounter==80){
+        if(leapCounter==1500){
             printf("EHEH");
             FILE *phaseSpace3;
             phaseSpace3 = fopen("phaseSpace3", "w");
@@ -158,7 +170,7 @@ int main(){
             }
             fclose(phaseSpace3);
         }
-        if(leapCounter==120){
+        if(leapCounter==2000){
             FILE *phaseSpace4;
             phaseSpace4 = fopen("phaseSpace4", "w");
             for(i=0; i<N_points; i++){
@@ -166,13 +178,53 @@ int main(){
             }
             fclose(phaseSpace4);
         }
-        if(leapCounter==160){
+        if(leapCounter==2500){
             FILE *phaseSpace5;
             phaseSpace5 = fopen("phaseSpace5", "w");
             for(i=0; i<N_points; i++){
             fprintf(phaseSpace5, "%lf %lf\n", particle[i].x, particle[i].v);
             }
             fclose(phaseSpace5);
+        }
+                if(leapCounter==3500){
+            FILE *phaseSpace6;
+            phaseSpace6 = fopen("phaseSpace6", "w");
+            for(i=0; i<N_points; i++){
+            fprintf(phaseSpace6, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace6);
+        }
+                if(leapCounter==5500){
+            FILE *phaseSpace7;
+            phaseSpace7 = fopen("phaseSpace7", "w");
+            for(i=0; i<N_points; i++){
+            fprintf(phaseSpace7, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace7);
+        }
+                if(leapCounter==9500){
+            FILE *phaseSpace8;
+            phaseSpace8 = fopen("phaseSpace8", "w");
+            for(i=0; i<N_points; i++){
+            fprintf(phaseSpace8, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace8);
+        }
+                if(leapCounter==15500){
+            FILE *phaseSpace9;
+            phaseSpace9 = fopen("phaseSpace9", "w");
+            for(i=0; i<N_points; i++){
+            fprintf(phaseSpace9, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace9);
+        }
+                if(leapCounter==25000){
+            FILE *phaseSpace10;
+            phaseSpace10 = fopen("phaseSpace10", "w");
+            for(i=0; i<N_points; i++){
+            fprintf(phaseSpace10, "%lf %lf\n", particle[i].x, particle[i].v);
+            }
+            fclose(phaseSpace10);
         }
         if(leapCounter%100==0)
         printf("%d/100\n", leapCounter/(MAX_STEPS/100));
@@ -184,11 +236,11 @@ int main(){
         //fftw_free(kPot);
         //fftw_destroy_plan(fft_real_fwd);
         //fftw_destroy_plan(fft_real_bck);
+    gettimeofday(&t2, NULL);
+    elapsedTime = (t2.tv_sec - t1.tv_sec);      // sec to ms
+    elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000000.0;   // us to ms
+    printf("\n----------------------------------------------------------------------\n|Integration completed in %lf seconds, taken %lu steps|\n----------------------------------------------------------------------\n\n", elapsedTime, totalStepsTaken);
         //free(force);
         //free(Pot);
-        /*fclose(phaseSpace1);
-        fclose(phaseSpace2);
-        fclose(phaseSpace3);
-        fclose(phaseSpace4);
-        fclose(phaseSpace5);*/
+        return 0;
     }
