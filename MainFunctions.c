@@ -6,7 +6,7 @@
 
 double NGP(double x, double Cell_Size){ //Nearest Grid Point
     if(fabs(x)<Cell_Size){
-        return Cell_Size;
+        return 1;
     } else {
         return 0;
     }
@@ -39,22 +39,22 @@ double TSC(double x, double Cell_Size){ //Triangular Shaped Cloud
 
 double densityJthCell(int j, double (*f)(double, double), double BoxLenght, double massa, double partPos, double cellSize){ //in realtà è la massa nella j-esima cella. Questa viene distribuita tramite una funzione di distribuzione sia essa NGP CIC TSC
     double retVal = 0;
-    double cellPos = cellSize/2.0+cellSize*j;
+    double cellPos = 0.5 * cellSize + cellSize*j;
     //printf("%lf", partPos-cellPos);
-    retVal = massa*f(partPos-cellPos, cellSize)/BoxLenght*BoxLenght*BoxLenght;
+    retVal = massa*f(partPos-cellPos, cellSize)/cellSize/BoxLenght/BoxLenght;
     return retVal;
 }
 
-double timeStep(double cellSize, double minVel){ //Calcolo del time step. Probabilmente contiene un errore, di fatti non è stata usata (è commentata nel main)
+double timeStep(double cellSize, double maxVel){ //Calcolo del time step. Probabilmente contiene un errore, di fatti non è stata usata (è commentata nel main)
     double w, retVal;
     w = 0.3;
-    retVal = w * cellSize/minVel;
+    retVal = w * cellSize/maxVel;
     return retVal;
 }
 
 double halfStepVelocity(double v, double timeStep, double F, double mass){ //update della velocità nel leap frog
     double retVal;
-    retVal = v + F/mass * timeStep;
+    retVal = v + F/mass * 0.5 * timeStep;
     return retVal;
 }
 double posUpdate(double x, double v, double timeStep){ //Update della posizione nel leap frog

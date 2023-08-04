@@ -5,6 +5,7 @@ void rejection(double ymin, double ymax, int numpunti, double intervallo, long *
 void makeHist(char *name, int Nbin);
 void readParamDouble(char *name);
 void readParamInt(char *name);
+void readParamChar(char *name);
 double * creaPunti(int Npnt, double (*f)(double), long int *dumm);
 double anglePHI(double phi);
 double angleTHETA(double costheta);

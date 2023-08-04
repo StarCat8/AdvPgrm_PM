@@ -17,3 +17,5 @@ int outBin;
 double unit_Time;
 double second_in_year = 31536000;
 double codeUnit_G;
+double StopTime;
+//extern char Dist_Name = [];

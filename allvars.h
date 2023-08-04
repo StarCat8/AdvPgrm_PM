@@ -21,3 +21,5 @@ extern int outBin;
 extern double unit_Time;
 extern double second_in_year;
 extern double codeUnit_G;
+extern double StopTime;
+//extern char *Dist_Name;

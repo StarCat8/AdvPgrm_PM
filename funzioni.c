@@ -40,7 +40,7 @@ double ran3(long *idum){
                 ma[i] -= ma[1+(i+30) % 55];
                 if (ma[i] < MZ) ma[i] += MBIG;
                 }
-        inext=0;  
+        inext=0;
         inextp=31;
         *idum=1;
         }
@@ -128,6 +128,9 @@ void readParamDouble(char *name){
         if(!strcmp(buf, "H_0")){
             H_0 = x;
         }
+        if(!strcmp(buf, "StopTime")){
+            StopTime = x;
+        }
         }
         fclose(ptrToParam);
     }
@@ -152,6 +155,20 @@ void readParamInt(char *name){
     }
     fclose(ptrToParam);
     }
+
+/*void readParamChar(char *name){
+    char buf[256];
+    char *x;
+    FILE *ptrToParam;
+    ptrToParam = fopen(name, "r");  
+    while(fscanf(ptrToParam, "%s %s\n", buf, x)!=EOF){
+        if(!strcmp(buf, "Dist_Name")){
+            Dist_Name = x;
+    }
+    fclose(ptrToParam);
+    }
+    }
+*/
 
 void rejection(double ymin, double ymax, int numpunti, double intervallo, long *dumm, double rho_crit, double A, double massa, double i_speed, char *name, int TEXT, int BINAR){
 	FILE *fileT, *fileB;
